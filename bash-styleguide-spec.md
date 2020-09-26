@@ -251,7 +251,8 @@ EXAMPLES
 [[ YOUR_TEST_CONDITION ]]  ## RIGHT
 [ YOUR_TEST_CONDITION ]  ## WRONG
 
-# short-circuit short if clauses so this:
+
+# short-circuit short if-clauses so this:
 if [[ SOME_CONDITION ]]
 then 
 	DO_SOMETHING
@@ -259,7 +260,8 @@ fi
 # becomes: (RIGHT)
 [[ SOME_CONDITION ]]&&DO_SOMETHING
 
-# BUT NEVER THIS:
+
+# BUT NEVER DO THIS:
 if [[ SOME_CONDITION ]]
 then 
 	DO_SOMETHING
