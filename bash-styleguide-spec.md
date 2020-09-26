@@ -156,7 +156,7 @@ some code  ## some comment
             - sounds stupid, but that way you dodge having to descend down into indentation hell
     - always construct paths only once, dont repeat these `"${_var1}"/"${_var2}"` all over the place
         - instead construct once and save to a properly named variable which is then used afterwards
-        - ALWAYS DO THIS. NO EXCEPTIONS.
+        - ALWAYS DO THIS. NO EXCEPTIONS. mangled paths are among the main sources scripts break/dont work.
 
 - dereferencing variables is always done within braces
     - because this improves readability
