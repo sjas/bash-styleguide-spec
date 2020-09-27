@@ -3,6 +3,7 @@
 ```
 ## general recommendations 
 ## documentation&&commenting guidelines 
+## headline that is parsable into a TOC
 ## variables 
 ## functions 
 ## conditions 
@@ -43,6 +44,7 @@ do
 	WHATEVER
 done
 
+#############################################################################################################
 
 #COMPARE THIS: shortcircuiting applied and good semantic variable handling (RIGHT)
 local _currentdir=""  ## always null vars,and dont quote for-loop var in next line!
@@ -57,6 +59,7 @@ do
         mkdir -p "${_path}"||error_message
     fi
 done
+
 #TO THAT: (WRONG)
 for dir in ${dirs_to_cleanup}
 do
@@ -119,7 +122,7 @@ some code  ## some comment
     - they are clearly distinguished from functions/executables
     - they are clearly distinguished from pseudocode in documentation
     - single underscores are only used for prefixing variables - renaming variable via search/replace works
-    - only exception are environment variables (these dont get a leading underscore)
+    - only exception are `ENVIRONMENT_VARIABLES` (these dont get a leading underscore)
         - these are CAPS and can possibly have underscores in them
             - still these are used so rarely that they dont clash with `PSEUDO_CODE_DEFINITIONS_USED_ELSEWHERE`
 - in functions always use local variables
@@ -163,7 +166,7 @@ some code  ## some comment
     - and it makes it easier when deleting pre/suffixes or search/replacing in the variable's data
     - except for positional arguments
     - usually for running indexes (like `i`) too,but there also always use `${i}` as it improves readability
-    - except when used within arithmetic expansion (`$(( ... ))`)
+    - except when used within arithmetic expansion aka `$(( ... ))`
     - fixme
 
 
@@ -219,9 +222,11 @@ __addtopath() {
     export PATH
 }
 
+#############################################################################################################
 
 mkcd() { if [[ $# -eq 0 ]];then pushd "$(mktemp -d)";else mkdir "$1"&&pushd "$1";fi;}
 
+#############################################################################################################
 
 alias cddp='__cdd "${_folder_docs_prv}"'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -251,24 +256,30 @@ EXAMPLES
 [[ YOUR_TEST_CONDITION ]]  ## RIGHT
 [ YOUR_TEST_CONDITION ]  ## WRONG
 
+#############################################################################################################
 
-# short-circuit short if-clauses so this:
+#DO THIS:
+#short-circuit short if-clauses so this:
 if [[ SOME_CONDITION ]]
 then 
 	DO_SOMETHING
 fi
-# becomes: (RIGHT)
+
+#which becomes: (RIGHT)
 [[ SOME_CONDITION ]]&&DO_SOMETHING
 
 
-# BUT NEVER DO THIS:
+
+#BUT NEVER DO THIS:
+#so this with an `else` clause:
 if [[ SOME_CONDITION ]]
 then 
 	DO_SOMETHING
 else
 	DO_SOMETHING_ELSE_INSTEAD
 fi
-# becomes: (WRONG)
+
+#becomes: (WRONG)
 [[ SOME_CONDITION ]]&&DO_SOMETHING||OR_DO_SOMETHING_ELSE_INSTEAD  ## WRONG!!!
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -313,15 +324,16 @@ $(( _a+_b ))
 
 
 ## linebreaking #############################################################################################
-- this sounds trivial, but good newline-hygiene improves readability by leaps and bounds
+- this sounds trivial,but isnt. good newline-hygiene improves readability by leaps and bounds
 - try splitting content semantically,ofc
 - put pipes as first char,indented,on their own line
-    - if the main command was done already even if it also contains pipes (remember: split semantically)
+    - do when the main command was done already even if it also contains pipes (remember: split semantically)
+    - use this also for longer non-bash parts,i.e. for `awk` or passing data like for `curl`
 - put matching parentheses on their own,on the same indentation level
 
 
 
-EXAMPLE
+EXAMPLES
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~bash
 zabbixproblems() {
     (\
@@ -350,6 +362,25 @@ zabbixproblems() {
         |column -s'@' -t\
     )\
     |tac
+}
+
+#############################################################################################################
+
+__getzabbixapitoken() {
+    curl -s -k -X POST -H "Content-Type:application/json"\
+        --data\
+            "{\
+                \"jsonrpc\": \"2.0\",\
+                \"method\":\"user.login\",\
+                \"params\":\
+                {\
+                    \"user\":\"${USER}\",\
+                    \"password\":\"${_PASS}\"\
+                },\
+                \"id\":1\
+            }"\
+            "${_ZABBIX_URL}"\
+    |jq -r '.result'
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
